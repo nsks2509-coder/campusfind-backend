@@ -2,6 +2,7 @@ package com.campusfind.backend.claim;
 
 import com.campusfind.backend.item.Item;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
@@ -21,6 +22,7 @@ public class Claim {
     @Column(nullable = false, length = 80)
     private String claimantName;
 
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Column(nullable = false, length = 160)
     private String claimantEmail;
 
