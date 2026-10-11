@@ -1,6 +1,7 @@
 package com.campusfind.backend.item;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
@@ -29,6 +30,7 @@ public class Item {
     @Column(nullable = false, length = 80)
     private String contactName;
 
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Column(nullable = false, length = 160)
     private String contactEmail;
 
