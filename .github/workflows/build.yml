@@ -4,7 +4,10 @@ on:
   push:
     branches: [main]
   pull_request:
-    branches: [main]
+    branches: [main, codex/**]
+
+permissions:
+  contents: read
 
 jobs:
   build:
@@ -16,4 +19,4 @@ jobs:
           distribution: temurin
           java-version: '17'
           cache: maven
-      - run: mvn -B -DskipTests package
+      - run: mvn -B verify
