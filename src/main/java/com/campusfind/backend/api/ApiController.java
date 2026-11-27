@@ -41,7 +41,7 @@ public class ApiController {
             @RequestParam(required = false) String category) {
         return itemRepository.findAll(Sort.by(Sort.Direction.DESC, "createdAt"))
                 .stream()
-                .filter(item -> item.getStatus().equals("OPEN"))
+                .filter(item -> "OPEN".equals(item.getStatus()))
                 .filter(item -> type == null || type.isBlank()
                         || type.equalsIgnoreCase("ALL") || item.getType().equalsIgnoreCase(type))
                 .filter(item -> category == null || category.isBlank()
