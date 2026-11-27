@@ -14,8 +14,9 @@ Spring Boot REST API for the CampusFind campus Lost & Found Portal.
 - `GET /api/health` — service health
 - `GET /api/items?q=&type=&category=` — search/filter open reports
 - `POST /api/items` — create a LOST or FOUND report
-- `POST /api/items/{id}/claims` — submit a claim
-- `GET /api/items/{id}/claims` — list claims associated with a report (demo endpoint; not authenticated)
+- `POST /api/items/{id}/claims` — submit a private ownership claim
+
+Claim proofs are accepted but are not exposed through a public read endpoint. A future authenticated owner/admin workflow must authorize claim access before it is added.
 
 Example item request:
 ```json
@@ -70,4 +71,4 @@ Use a Docker-capable Java host and deploy this repository. It builds from the Do
 Frontend: https://github.com/nsks2509-coder/campusfind-frontend
 
 ## Project scope
-This is an educational MVP. The report creation and claims endpoints do not yet require login and are not protected by roles. Add authentication/authorization before handling real personal data.
+This is an educational MVP. Report creation and claim submission do not yet require login and are not protected by roles. Claim proof text and claimant details are private input and must not be exposed publicly. Add authentication, authorization, rate limiting, and a production database before handling real personal data.
