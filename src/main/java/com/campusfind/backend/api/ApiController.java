@@ -14,8 +14,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Locale;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api")
@@ -40,7 +40,7 @@ public class ApiController {
             @RequestParam(required = false) String category) {
         return itemRepository.findAll(Sort.by(Sort.Direction.DESC, "createdAt"))
                 .stream()
-                .filter(item -> item.getStatus().equals("OPEN"))
+                .filter(item -> "OPEN".equals(item.getStatus()))
                 .filter(item -> type == null || type.isBlank()
                         || type.equalsIgnoreCase("ALL") || item.getType().equalsIgnoreCase(type))
                 .filter(item -> category == null || category.isBlank()
@@ -88,14 +88,11 @@ public class ApiController {
         return claimRepository.save(claim);
     }
 
-    @GetMapping("/items/{itemId}/claims")
-    public List<Claim> getClaims(@PathVariable Long itemId) {
-        if (!itemRepository.existsById(itemId)) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Item not found.");
-        }
-        return claimRepository.findAll(Sort.by(Sort.Direction.DESC, "createdAt"))
-                .stream().filter(claim -> claim.getItem().getId().equals(itemId)).toList();
-    }
+    /*
+     * Claim proofs are private. There is deliberately no public GET endpoint for
+     * claims: reading them requires an authenticated, authorized workflow, which
+     * this public MVP does not implement yet.
+     */
 
     private boolean contains(String value, String query) {
         return value != null && value.toLowerCase(Locale.ROOT).contains(query.toLowerCase(Locale.ROOT));
