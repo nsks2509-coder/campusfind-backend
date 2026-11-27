@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Locale;
@@ -34,7 +35,7 @@ public class ApiController {
     }
 
     @GetMapping("/items")
-    public List<Item> getItems(
+    public List<PublicItemResponse> getItems(
             @RequestParam(required = false) String q,
             @RequestParam(required = false) String type,
             @RequestParam(required = false) String category) {
@@ -50,6 +51,9 @@ public class ApiController {
                         || contains(item.getDescription(), q)
                         || contains(item.getLocation(), q)
                         || contains(item.getCategory(), q))
+                .map(item -> new PublicItemResponse(
+                        item.getId(), item.getTitle(), item.getType(), item.getCategory(),
+                        item.getDescription(), item.getLocation(), item.getStatus(), item.getCreatedAt()))
                 .toList();
     }
 
@@ -88,18 +92,13 @@ public class ApiController {
         return claimRepository.save(claim);
     }
 
-    @GetMapping("/items/{itemId}/claims")
-    public List<Claim> getClaims(@PathVariable Long itemId) {
-        if (!itemRepository.existsById(itemId)) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Item not found.");
-        }
-        return claimRepository.findAll(Sort.by(Sort.Direction.DESC, "createdAt"))
-                .stream().filter(claim -> claim.getItem().getId().equals(itemId)).toList();
-    }
-
     private boolean contains(String value, String query) {
         return value != null && value.toLowerCase(Locale.ROOT).contains(query.toLowerCase(Locale.ROOT));
     }
+
+    public record PublicItemResponse(
+            Long id, String title, String type, String category, String description,
+            String location, String status, LocalDateTime createdAt) {}
 
     public record CreateItemRequest(
             @NotBlank @Size(max = 100) String title,
