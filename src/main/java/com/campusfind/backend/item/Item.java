@@ -27,6 +27,7 @@ public class Item {
     @Column(nullable = false, length = 120)
     private String location;
 
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Column(nullable = false, length = 80)
     private String contactName;
 
