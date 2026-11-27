@@ -1,23 +1,53 @@
-# CampusFind Backend
+# CampusFind API
 
-Spring Boot REST API for the CampusFind campus Lost & Found Portal.
+A Spring Boot REST API for a campus lost-and-found board. The companion [React frontend](https://github.com/nsks2509-coder/campusfind-frontend) provides report search, item submissions, and claim submissions.
 
 ## Stack
-- Java 17
-- Spring Boot 3.3
-- Spring Web (REST)
-- Spring Data JPA / Hibernate
-- H2 database
-- Bean Validation
 
-## API endpoints
-- `GET /api/health` — service health
-- `GET /api/items?q=&type=&category=` — search/filter open reports
-- `POST /api/items` — create a LOST or FOUND report
-- `POST /api/items/{id}/claims` — submit a claim
-- `GET /api/items/{id}/claims` — list claims associated with a report (demo endpoint; not authenticated)
+- Java 17 and Spring Boot 3.3
+- Spring Web, Spring Data JPA, and Bean Validation
+- H2 for local development; PostgreSQL-compatible JDBC configuration for hosting
 
-Example item request:
+## API
+
+| Method | Route | Purpose |
+| --- | --- | --- |
+| `GET` | `/api/health` | Health check |
+| `GET` | `/api/items?q=&type=&category=` | List and filter open reports |
+| `POST` | `/api/items` | Create a lost or found report |
+| `POST` | `/api/items/{id}/claims` | Submit an ownership claim |
+
+The public item response omits reporter names and email addresses. Claims can be submitted, but this MVP does not yet include authentication, a claim-review dashboard, or notifications to reporters. There is no public endpoint for listing claims.
+
+## Run locally
+
+Requirements: JDK 17+ and Maven 3.9+.
+
+```bash
+mvn spring-boot:run
+```
+
+The API listens on [http://localhost:8080](http://localhost:8080). The default H2 file database is stored under `./data`.
+
+## Configuration
+
+| Variable | Default | Purpose |
+| --- | --- | --- |
+| `PORT` | `8080` | HTTP port |
+| `DB_URL` | `jdbc:h2:file:./data/campusfind` | JDBC URL |
+| `DB_USER` | `sa` | Database user |
+| `DB_PASS` | empty | Database password |
+| `FRONTEND_URL` | `http://localhost:5173` | Additional allowed CORS origin |
+
+For the included Dockerfile:
+
+```bash
+docker build -t campusfind-backend .
+docker run --rm -p 8080:8080 campusfind-backend
+```
+
+## Example report
+
 ```json
 {
   "title": "Blue water bottle",
@@ -30,44 +60,8 @@ Example item request:
 }
 ```
 
-Example claim request:
-```json
-{
-  "claimantName": "Demo Student",
-  "claimantEmail": "student@example.com",
-  "message": "It has a small scratch under the lid."
-}
-```
+The contact fields are accepted for storage but are not returned by the public listing API.
 
-## Run locally
-Requirements: JDK 17+ and Maven 3.9+, or Docker Desktop.
+## Demo limitations
 
-With Maven:
-```bash
-mvn spring-boot:run
-```
-API URL: http://localhost:8080
-
-With Docker:
-```bash
-docker build -t campusfind-backend .
-docker run --rm -p 8080:8080 campusfind-backend
-```
-
-## Environment variables
-- `PORT` — server port (default 8080)
-- `DB_URL` — H2 JDBC URL (default `jdbc:h2:file:./data/campusfind`)
-- `DB_USER` — database username (default `sa`)
-- `DB_PASS` — database password (default empty)
-- `FRONTEND_URL` — frontend origin allowed by CORS (default `http://localhost:5173`)
-
-For a live demo using H2, remember that H2 file data on many cloud hosts will be lost when the container is replaced unless a persistent disk/volume is configured. Don't store sensitive student data in this demonstration deployment.
-
-## Deploy
-Use a Docker-capable Java host and deploy this repository. It builds from the Dockerfile. Add `FRONTEND_URL` containing the frontend's deployed origin, such as a Vercel URL (without `/api`). The hosting platform should pass its port in `PORT`.
-
-## Related repository
-Frontend: https://github.com/nsks2509-coder/campusfind-frontend
-
-## Project scope
-This is an educational MVP. The report creation and claims endpoints do not yet require login and are not protected by roles. Add authentication/authorization before handling real personal data.
+This is a portfolio MVP, not a production service. The API currently accepts public submissions and has no user accounts, abuse controls, or claim review/notification workflow. Use fictional data only until those controls are implemented. A production deployment should also use managed database migrations, persistent storage, HTTPS, and automated tests.
