@@ -74,7 +74,7 @@ class ApiControllerIntegrationTest {
                 .andExpect(jsonPath("$.claimantEmail").doesNotExist());
 
         mockMvc.perform(get("/api/items/{itemId}/claims", itemId))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isMethodNotAllowed());
     }
 
     @Test
